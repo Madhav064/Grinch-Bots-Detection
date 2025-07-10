@@ -1,6 +1,3 @@
-# Grinch-Bots-Detection-for-Walmart
-
-Dilpreet
 # Grinch Bot Detection on E-commerce Website
 
 ## Overview
