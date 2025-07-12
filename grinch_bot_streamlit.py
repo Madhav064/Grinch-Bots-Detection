@@ -7,6 +7,11 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env if present
+load_dotenv()
 
 # Set page configuration first
 st.set_page_config(page_title="Grinch Bot Detector", layout="wide")
@@ -44,10 +49,13 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Load trained model and encoder
+# Load trained model and encoder using environment variables
+MODEL_PATH = os.getenv("MODEL_PATH", "rf_bot_model.pkl")
+ENCODER_PATH = os.getenv("ENCODER_PATH", "scroll_behavior_encoder.pkl")
+BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:8000")
 try:
-    rf_model = joblib.load("rf_bot_model.pkl")
-    le = joblib.load("scroll_behavior_encoder.pkl")
+    rf_model = joblib.load(MODEL_PATH)
+    le = joblib.load(ENCODER_PATH)
     model_loaded = True
 except Exception as e:
     st.error(f"Error loading model: {e}")
@@ -66,20 +74,21 @@ tab1, tab2, tab3 = st.tabs(["📊 Live Session Monitoring", "📂 Batch Predicti
 with tab1:
     st.header("📊 Live Session Monitoring")
     st.markdown("""
-    This section shows real-time data from the Chrome extension monitoring. 
-    Start a session in the extension and complete a purchase flow to see results here.
+    This section shows real-time data from website session monitoring. Submit session data from your website to the API to see live results here.
     """)
     
     # Create a container for the session data
     session_container = st.container()
     
     # Add auto-refresh option
-    auto_refresh = st.checkbox("Auto-refresh (every 5 seconds)", value=True)
+    auto_refresh = st.checkbox("Auto-refresh (every 60 seconds)", value=False)
     
     # Function to fetch latest session data
+    # Use environment variable for backend API URL
+    BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:8000")
     def fetch_latest_session():
         try:
-            response = requests.get("http://localhost:8000/latest_session")
+            response = requests.get(f"{BACKEND_API_URL}/latest_session")
             if response.status_code == 200:
                 return response.json()
             return None
@@ -90,7 +99,7 @@ with tab1:
     # Display latest session data
     def display_session_data(session_data):
         if not session_data or "error" in session_data:
-            st.info("No active session data available. Start a session using the Chrome extension.")
+            st.info("No active session data available. Submit a session from your website to see results.")
             return
         
         # Extract data
@@ -106,7 +115,15 @@ with tab1:
         with col1:
             st.subheader("Session Information")
             st.markdown(f"**Session ID:** {session_id}")
-            st.markdown(f"**Timestamp:** {datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')}")
+            from dateutil import parser
+            if isinstance(timestamp, str):
+                try:
+                    dt = parser.isoparse(timestamp)
+                    st.markdown(f"**Timestamp:** {dt.strftime('%Y-%m-%d %H:%M:%S')}")
+                except Exception:
+                    st.markdown(f"**Timestamp:** {timestamp}")
+            else:
+                st.markdown(f"**Timestamp:** {datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')}")
             
             # Create metrics visualization
             st.subheader("Session Metrics")
@@ -186,7 +203,7 @@ with tab1:
     if auto_refresh:
         refresh_placeholder = st.empty()
         refresh_placeholder.info("Auto-refreshing...")
-        time.sleep(5)  # Wait 5 seconds
+        time.sleep(60)  # Wait 60 seconds
         refresh_placeholder.empty()  # Remove the message
         st.rerun()  # Rerun the app
 
@@ -407,16 +424,12 @@ with tab3:
     except Exception as e:
         st.error(f"Error in Single Session Analysis tab: {e}")
 
-# Add information about the Chrome extension
+# Add information about Website Session Detection
 st.sidebar.title("Grinch Bot Detector")
-st.sidebar.image("grinch-bot-extension/images/icon128.png", width=100)
 st.sidebar.markdown("""
 ## How to Use
-1. Install the Chrome extension
-2. Browse an e-commerce website
-3. Click "Start Monitoring Session" in the extension
-4. Complete a purchase flow (add to cart → checkout → purchase)
-5. View results here in real-time
+1. Integrate your website to POST session data to the FastAPI backend (`/predict_session`).
+2. View live session results here in the dashboard.
 
 ## Features Monitored
 - Mouse movement patterns

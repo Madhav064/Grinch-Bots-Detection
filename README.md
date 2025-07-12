@@ -40,14 +40,9 @@ The system uses machine learning models trained on a Kaggle dataset to analyze s
 
 ---
 
-## 🏗️ System Architecture
-
-### 📐 Architecture Diagram
-
-
-
 ### 🔄 Data Flow Diagram
-
+ 
+ ![Workflow Diagram](./workflow.png)
 
 
 1. **Session Tracking** – Tracks user behavior: clicks, navigation, response times.
@@ -97,7 +92,7 @@ The system uses machine learning models trained on a Kaggle dataset to analyze s
 | Name              | Role                        |
 | ----------------- | --------------------------- |
 | Madhav Raj Sharma | Detection System & ML Model |
-| Dilpreet Singh    | Frontend Development        |
+| Dilpreet Singh    | Full Stack Web Development  |
 | Ayush Karn        | Bot Simulation              |
 
 ---
@@ -111,59 +106,7 @@ The system uses machine learning models trained on a Kaggle dataset to analyze s
 
 ---
 
-## ⚙️ Installation (For Developers)
-
-1. **Clone Repository**
-
-```bash
-git clone https://github.com/<your-username>/bot-detection-system.git
-cd bot-detection-system
-```
-
-2. **Frontend**
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-3. **Backend API**
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-4. **ML Model Backend**
-
-```bash
-cd ml-backend
-pip install -r requirements.txt
-python app.py
-```
-
-5. **Dashboard**
-
-```bash
-cd dashboard
-pip install -r requirements.txt
-streamlit run app.py
-```
-
----
-
-## 🔗 API Endpoints
-
-| Method | Endpoint       | Description                            |
-| ------ | -------------- | -------------------------------------- |
-| POST   | `/api/detect`  | Sends session data for classification. |
-| GET    | `/api/results` | Fetches real-time detection results.   |
-
----
 
 ## 🏅 Recognition
 
 Built for Walmart Sparkathon to solve a real-world problem of unfair e-commerce practices during high-demand events.
-

@@ -6,6 +6,11 @@ import numpy as np
 from typing import Dict, Optional, List
 import json
 from fastapi.encoders import jsonable_encoder
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env if present
+load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -23,10 +28,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load the trained model and encoder
+# Load model and encoder using environment variables
+MODEL_PATH = os.getenv("MODEL_PATH", "rf_bot_model.pkl")
+ENCODER_PATH = os.getenv("ENCODER_PATH", "scroll_behavior_encoder.pkl")
 try:
-    model = joblib.load("rf_bot_model.pkl")
-    encoder = joblib.load("scroll_behavior_encoder.pkl")
+    model = joblib.load(MODEL_PATH)
+    encoder = joblib.load(ENCODER_PATH)
 except Exception as e:
     print(f"Error loading model: {e}")
     model = None
@@ -133,6 +140,7 @@ async def predict_bot(data: BehaviorData):
 
 @app.post("/predict_session", response_model=SessionPredictionResponse)
 async def predict_session(data: SessionData):
+    print("[predict_session] Received data from frontend:", data.model_dump())
     """
     Predict whether a session is from a bot or human
     """
@@ -180,13 +188,16 @@ async def predict_session(data: SessionData):
 
         # Generate a unique session ID based on timestamp
         import time
+        from datetime import datetime
+        import pytz
+        tz = pytz.timezone('Asia/Kolkata')
+        now = datetime.now(tz)
         session_id = f"session_{int(time.time())}"
-        
         # Store the session data and results for Streamlit
         global latest_session
         latest_session = {
             "session_id": session_id,
-            "timestamp": time.time(),
+            "timestamp": now.isoformat(),
             "features": {
                 "mouse_movement_units": data.mouse_movement_units,
                 "typing_speed_cpm": data.typing_speed_cpm,
