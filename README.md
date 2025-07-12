@@ -69,9 +69,9 @@ The system uses machine learning models trained on a Kaggle dataset to analyze s
 
 | Component        | Technology           |
 | ---------------- | -------------------- |
-| Frontend         | Next.js, React.js    |
+| Frontend         | Next.js              |
 | Backend API      | Node.js, Express.js  |
-| ML Model Backend | Python, Flask        |
+| ML Model Backend | Python, Fastapi      |
 | Dashboard        | Streamlit            |
 | Bot Simulation   | Python               |
 | ML Libraries     | Scikit-learn, Pandas |
@@ -92,8 +92,8 @@ The system uses machine learning models trained on a Kaggle dataset to analyze s
 | Name              | Role                        |
 | ----------------- | --------------------------- |
 | Madhav Raj Sharma | Detection System & ML Model |
-| Dilpreet Singh    | Full Stack Web Development  |
-| Ayush Karn        | Bot Simulation              |
+| Dilpreet Singh    | E-commerce Website Developer|
+| Ayush Karn        | [Grinch Bot Developer](https://github.com/AyushKarn69/grinch-bot)        |
 
 ---
 
